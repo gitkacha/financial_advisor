@@ -1,0 +1,55 @@
+find_trending_companies:
+  description: >
+    Find the top trending companies in the news in {sector} by searching the latest news. Find new companies that you've not found before.
+  expected_output: >
+    A list of trending companies in {sector}
+  agent: trending_company_finder
+  output_file: output/trending_companies.json
+  
+research_trending_companies:
+  description: >
+    Given a list of trending companies, provide detailed analysis of each company in a report by searching online
+  expected_output: >
+    A report containing detailed analysis of each company
+  agent: financial_researcher
+  context:
+    - find_trending_companies
+  output_file: output/research_report.json
+
+pick_best_company:
+  description: >
+    Analyze the research findings and pick the best companies for investment.
+    Then respond with a detailed report on why you chose this company, and which companies were not selected.
+  expected_output: >
+    The chosen company and why it was chosen; the companies that were not selected and why they were not selected.
+  agent: stock_picker
+  context:
+    - research_trending_companies
+  output_file: output/stock_picks.md
+
+
+
+portfolio_analysis:
+  description: >
+    Read and extract all investments, asset allocations, and ticker symbols from the provided portfolio CSV file.
+  expected_output: >
+    Structured output evaluating the strength and weakness of every investment in the portfolio
+  agent: portfolio_analyser
+
+generate_final_rebalance_report:
+  description: >
+    Compare the existing portfolio data against the new market research. 
+    Produce a final comprehensive report that explicitly lists a recommended action (e.g., HOLD, BUY, SELL, REDUCE) for every single investment in the existing portfolio.
+  expected_output: >
+    A detailed markdown report with an executive summary and a clear action item table for each original investment.
+  agent: portfolio_curator
+  output_file: output/final_financial_advisor_report.md
+  context:
+   - portfolio_analysis
+   - pick_best_company
+
+
+
+
+
+
